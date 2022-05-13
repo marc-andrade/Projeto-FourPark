@@ -8,9 +8,56 @@ public class Estacionamento {
 	
 	private static final int TOTAL_VAGAS = 50;
 	private Integer posicao, ocupadas, livres;
+	double valorPagamento;
 	//Outra opcão criar um HashMap e passar Objeto veiculo, HoraEntrada e Saida como parametros
-	private Veiculo vagas[] = new Veiculo[TOTAL_VAGAS];
+	//HashMap<Integer,Estacionamento> vagas = new HashMap<>();
+	private Estacionamento vaga[] = new Estacionamento[TOTAL_VAGAS];
+	private Veiculo veiculo = new Veiculo();
+	private String horarioDeEntrada, horarioDeSaida;
 	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+	
+	
+	public Estacionamento() {
+		
+	}
+	
+	public Estacionamento(Veiculo veiculo, String horaEntrada) {
+		this.veiculo = veiculo;
+		this.horarioDeEntrada = horaEntrada;
+	}
+	
+	public Veiculo getVeiculo() {
+		return veiculo;
+	}
+
+	public void setVeiculo(Veiculo veiculo) {
+		this.veiculo = veiculo;
+	}
+
+	public String getHorarioDeEntrada() {
+		return horarioDeEntrada;
+	}
+
+	public void setHorarioDeEntrada(String horarioDeEntrada) {
+		
+		this.horarioDeEntrada = horarioDeEntrada;
+	}
+
+	public String getHorarioDeSaida() {
+		return horarioDeSaida;
+	}
+
+	public void setHorarioDeSaida(String horarioDeSaida) {
+		this.horarioDeSaida = horarioDeSaida;
+	}
+
+	public Double getValorPagamento() {
+		return valorPagamento;
+	}
+	
+	public void setValorPagamento(Double valorPagamento) {
+		this.valorPagamento = valorPagamento;
+	}
 	
 	public Integer getPosicao() {
 		return posicao;
@@ -20,12 +67,12 @@ public class Estacionamento {
 		this.posicao = posicao - 1;
 	}
 
-	public Veiculo[] getVagas() {
-		return vagas;
+	public Estacionamento[] getVagas() {
+		return vaga;
 	}
 	
-	public void setVagas(Veiculo veiculo, int posicao) {
-		vagas[posicao] = veiculo;
+	public void setVagas(Estacionamento estacionamento, int posicao) {
+		vaga[posicao] = estacionamento;
 	}
 
 	public static int getTotalVagas() {
@@ -90,7 +137,7 @@ public class Estacionamento {
 			System.out.println();
 			for(int i=0; i< getVagas().length ; i++) {
 				if(getVagas()[i] != null) {
-					System.out.print("\nVaga:"+(i+1)+" - "+ getVagas()[i]);
+					System.out.print("\nVaga:"+(i+1)+" - "+ getVagas()[i].getVeiculo());
 				}
 			}
 			System.out.println();
@@ -109,20 +156,22 @@ public class Estacionamento {
 		}
 	}
 	
-	public boolean validaHora(Date hora, Veiculo veiculo) {
+	public boolean validaHora(Date hora) {
+		
 		boolean validador = false;
 			try {
 				if(hora.before(sdf.parse(getVagas()[getPosicao()].getHorarioDeEntrada()))) {
-					System.out.println("Erro: Hora de saída menor que de entrada !!"); 
+					System.err.println("Erro: Hora de saída menor que de entrada !!"); 
 					validador = false;
 				}else if(hora.equals(sdf.parse(getVagas()[getPosicao()].getHorarioDeEntrada()))) {
-					System.out.println("Erro: Hora de saída igual a de entrada !!");
+					System.err.println("Erro: Hora de saída igual a de entrada !!");
+					validador = false;
 			}else {
 				System.out.println("Hora de saida aceita.");
 				validador = true;
 			}
 		}catch(ParseException e) {
-			System.out.println("Erro: Não foi possível comparar a hora" + e.getStackTrace());
+			System.err.println("Erro: Não foi possível comparar a hora" + e.getStackTrace());
 			validador = false;
 		}
 			return validador;
@@ -134,11 +183,11 @@ public class Estacionamento {
 		System.out.println("\nVaga esvaziada !");
 	}
 	
-	public double calculaValorHora(double valor) {
+	public double calculaValorHora(double valorPagamento) {
 		
 		double valorMinuto;
 		int hora,minutos,horaEntrada,minutosEntrada,horaSaida,minutosSaida;
-		
+		// 18:30 
 		horaEntrada =  Integer.parseInt(getVagas()[getPosicao()].getHorarioDeEntrada().substring(0,2));
 		minutosEntrada = Integer.parseInt(getVagas()[getPosicao()].getHorarioDeEntrada().substring(3,5));
 		
@@ -148,11 +197,17 @@ public class Estacionamento {
 		hora = horaSaida - horaEntrada;
 		minutos = minutosSaida - minutosEntrada;
 		
+		valorMinuto = valorPagamento / 60;
 		
-		valorMinuto = valor / 60;
+		valorPagamento = (minutos*valorMinuto) + hora * valorPagamento;
 		
-		valor = (minutos*valorMinuto) + hora * valor;
-		
-		return valor;
+		return valorPagamento;
 	}
+
+	@Override
+	public String toString() {
+		return veiculo + " | Entrada = " + horarioDeEntrada;
+	}
+	
+	
 }

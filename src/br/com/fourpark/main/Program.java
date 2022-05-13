@@ -1,3 +1,4 @@
+package br.com.fourpark.main;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,21 +9,20 @@ import br.com.fourpark.entities.Historico;
 import br.com.fourpark.entities.Veiculo;
 
 public class Program {
-
+	
 	public static void main(String[] args) {
 		
 		Scanner sc = new Scanner(System.in);
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		int escolha;
-		
-		Veiculo veiculo = new Veiculo();	
+			
 		Estacionamento estacionamento = new Estacionamento();
 		Historico historico = new Historico();
 		
-		Veiculo corsa = new Veiculo("HXM-8MM", "CHEVROLET", "Carro","18:20");
-		Veiculo fazer = new Veiculo("LOP-9813","HONDA", "Moto","01:17");
-		Veiculo m4 = new Veiculo("POI-8466", "BMW", "Carro","09:15");
-		Veiculo GTR = new Veiculo("GTR-2022","Nissan", "Super-Carro","01:45");
+		Estacionamento corsa = new Estacionamento(new Veiculo("HXM-8MM", "CHEVROLET", "Carro"),"22:15") ;
+		Estacionamento fazer = new Estacionamento(new Veiculo("LOP-9813","HONDA", "Moto"),"18:20");
+		Estacionamento m4 = new Estacionamento(new Veiculo("POI-8466", "BMW", "Carro"),"02:02");
+		Estacionamento GTR = new Estacionamento(new Veiculo("GTR-2022","Nissan", "Super-Carro"),"22:05") ;
 		
 		estacionamento.setVagas(corsa,0);
 		estacionamento.setVagas(fazer, 1);
@@ -44,7 +44,7 @@ public class Program {
 				break;
 		
 			case 1:
-				preencherVaga(sc, sdf, veiculo, estacionamento);
+				preencherVaga(sc, sdf, estacionamento);
 				break;
 			
 			case 2:
@@ -56,11 +56,11 @@ public class Program {
 				break;
 				
 			case 4:
-				esvaziarVaga(estacionamento, sc, sdf, veiculo,historico);
+				esvaziarVaga(estacionamento, sc, sdf, historico);
 				break;
 			
 			case 5: 
-				historico.imprimiHistorico();
+				historico.imprimirHistorico();
 				break;
 				
 			case 6:
@@ -77,6 +77,7 @@ public class Program {
 		sc.close();
 	}
 	
+
 	public static void menu() {
 		
 		System.out.print("\n|------------- Menu --------------|\n"
@@ -90,8 +91,9 @@ public class Program {
 				+ "|---------------------------------|");
 	}
 	
-	public static void preencherVaga(Scanner sc, SimpleDateFormat sdf,Veiculo veiculo, 
-			Estacionamento estacionamento) {
+	public static void preencherVaga(Scanner sc, SimpleDateFormat sdf, Estacionamento estacionamento) {
+		
+		Veiculo veiculo = new Veiculo();
 		int posicao;
 		String horaEntrada = null;
 		boolean validaPosicao;
@@ -105,17 +107,19 @@ public class Program {
 			veiculo.setModelo(sc.next());
 			System.out.print("Informe o tipo do Veículo: ");
 			veiculo.setTipo(sc.next());
+			estacionamento.setVeiculo(veiculo);
+			
 			while(true) {
 				System.out.print("\nInforme a hora de entrada: ");
 				try {
 					Date hora = sdf.parse(sc.next());
 					horaEntrada = sdf.format(hora);
-					veiculo.setHorarioDeEntrada(horaEntrada);
+					estacionamento.setHorarioDeEntrada(horaEntrada);
 					break;
 					
 				}catch (ParseException e) {
-					System.out.print("\nErro: Formato de hora inválida\n");
-					System.out.println("Formato aceito HH:mm");
+					System.err.print("\nErro: Formato de hora inválida\n");
+					System.err.println("Formato aceito HH:mm");
 				}
 			}
 			
@@ -126,14 +130,14 @@ public class Program {
 					validaPosicao = posicao > estacionamento.getVagas().length || posicao < 1;
 					
 					if(validaPosicao) {
-						System.out.print("Erro: posição de vaga não existe !.");
+						System.err.print("Erro: posição de vaga não existe !.");
 					}
 					
 				}while(validaPosicao);
 				estacionamento.setPosicao(posicao);
 				
 				if(estacionamento.verificaVagaOcupada()) {
-					estacionamento.setVagas(veiculo, estacionamento.getPosicao());
+					estacionamento.setVagas(estacionamento, estacionamento.getPosicao());
 					break;
 				}
 				System.out.print("Informe a vaga novamente.");
@@ -144,8 +148,8 @@ public class Program {
 		}
 	}
 	
-	public static void esvaziarVaga(Estacionamento estacionamento,Scanner sc, SimpleDateFormat sdf,
-			Veiculo veiculo, Historico historico) {
+	public static void esvaziarVaga(Estacionamento estacionamento,Scanner sc, SimpleDateFormat sdf, Historico historico) {
+		
 		Date hora = null;
 		int posicao;
 		boolean validaPosicao;
@@ -167,21 +171,21 @@ public class Program {
 				try {
 					hora = sdf.parse(sc.next());
 					
-					if(estacionamento.validaHora(hora, veiculo)) {
+					if(estacionamento.validaHora(hora)) {
 						estacionamento.getVagas()[estacionamento.getPosicao()].setHorarioDeSaida(sdf.format(hora));
 						break;	
 					}
 				}catch (ParseException e) {
-					System.out.println("\nErro: Formato de hora inválida.");
-					System.out.println("Formato aceito HH:mm");
+					System.err.println("\nErro: Formato de hora inválida.");
+					System.err.println("Formato aceito HH:mm");
 				}
 				System.out.print("\nDigite novamente.");
 			}
 			System.out.print("\nInforme o valor por hora: ");
 			valor = sc.nextDouble();
-			valor = estacionamento.calculaValorHora(valor);
-			System.out.printf("\nValor a pagar = R$%.2f\n",valor);
-			historico.setHistorico(estacionamento.getVagas()[estacionamento.getPosicao()], valor);
+			estacionamento.getVagas()[estacionamento.getPosicao()].setValorPagamento(estacionamento.calculaValorHora(valor));
+			System.out.printf("\nValor a pagar = R$%.2f\n",estacionamento.getVagas()[estacionamento.getPosicao()].getValorPagamento());
+			historico.setHistorico(estacionamento.getVagas()[estacionamento.getPosicao()]);
 			
 			estacionamento.esvaziarVaga();
 

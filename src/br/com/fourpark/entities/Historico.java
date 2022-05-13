@@ -1,25 +1,22 @@
 package br.com.fourpark.entities;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Historico {
 	
-	HashMap<Veiculo,Double> lista = new HashMap<>();
+	private ArrayList<Estacionamento> lista = new ArrayList<>();
 	
-	public void setHistorico(Veiculo veiculo,Double valor) {
-		lista.put(veiculo,valor);
+	public void setHistorico(Estacionamento estacionamento) {
+		lista.add(estacionamento);
 	}
 	
-	public void imprimiHistorico() {
+	public void imprimirHistorico() {
 		System.out.println("\n|------------------- Histórico de veículos -------------------|\n");
 		if(lista.size() != 0) {
-			
-			for(Veiculo item: lista.keySet()) {
-				
+			for(Estacionamento item: lista) {
 				System.out.println(item + 
-				"| Entrada: " + item.getHorarioDeEntrada()+
 				"| Saída: " + item.getHorarioDeSaida()
-				+String.format("| Valor Pago: %.2f", lista.get(item)));
+				+String.format("| Valor Pago: %.2f", item.getValorPagamento()));
 			}
 		}else {
 			System.out.println("Ainda não possuem Históricos.");
@@ -29,8 +26,8 @@ public class Historico {
 	
 	public void calculaTotalDia() {
 		double totalDia = 0;
-		for (Veiculo item: lista.keySet()) {
-			totalDia += lista.get(item);
+		for (Estacionamento item : lista ) {
+			totalDia += item.getValorPagamento();
 		}
 		System.out.printf("\nValor total do dia: %.2f\n",totalDia);
 	}

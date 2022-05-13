@@ -3,7 +3,7 @@ package br.com.fourpark.entities;
 public class Veiculo {
 	
 	private String placa, modelo, tipo;
-	private String horarioDeEntrada, horarioDeSaida;
+	
 
 	public Veiculo() {
 		
@@ -15,13 +15,6 @@ public class Veiculo {
 		this.tipo = tipo;
 	}
 	
-	public Veiculo(String placa, String modelo, String tipo, String horarioDeEntrada) {
-		this.placa = placa;
-		this.modelo = modelo;
-		this.tipo = tipo;
-		this.horarioDeEntrada = horarioDeEntrada;
-	}
-
 	public String getPlaca() {
 		return placa;
 	}
@@ -46,27 +39,10 @@ public class Veiculo {
 		this.tipo = tipo;
 	}
 	
-	
-	public String getHorarioDeEntrada() {
-		return horarioDeEntrada;
-	}
-
-	public void setHorarioDeEntrada(String horarioDeEntrada) {
-		this.horarioDeEntrada = horarioDeEntrada;
-	}
-
-	public String getHorarioDeSaida() {
-		return horarioDeSaida;
-	}
-
-	public void setHorarioDeSaida(String horarioDeSaida) {
-		this.horarioDeSaida = horarioDeSaida;
-	}
-
 	public String toString() {
-		return "Placa:" + placa
-				+" |Modelo:"+ modelo
-				+" |Tipo:" + tipo;
+		return "Placa: " + placa
+				+" | Modelo: "+ modelo
+				+" | Tipo: " + tipo;
 	}
 	
 }
